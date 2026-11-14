@@ -1,0 +1,8 @@
+{
+  "name": "The Little Bakehouse",
+  "description": "100% eggless artisanal home bakery in Pirangut, Pune — online cake ordering, custom cake requests, and bakery management dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

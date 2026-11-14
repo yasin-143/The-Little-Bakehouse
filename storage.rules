@@ -1,0 +1,43 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Global Default-Deny
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+
+    function isValidImageUpload() {
+      return request.resource != null
+        && request.resource.size > 0
+        && request.resource.size <= 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|jpg|png|webp)');
+    }
+
+    function isVerifiedAdmin() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && (
+          request.auth.token.email == 'yasin.ladab.28@gmail.com' ||
+          firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid))
+        );
+    }
+
+    // Cake catalog photography (public read, admin-only upload/delete)
+    match /cakes/{fileName} {
+      allow read: if true;
+      allow write: if isVerifiedAdmin() && isValidImageUpload();
+      allow delete: if isVerifiedAdmin();
+    }
+
+    // Custom cake reference photos uploaded by customers
+    match /custom-requests/{userId}/{fileName} {
+      allow read: if request.auth != null && (request.auth.uid == userId || isVerifiedAdmin());
+      allow write: if request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.uid == userId
+        && isValidImageUpload();
+      allow delete: if isVerifiedAdmin();
+    }
+  }
+}

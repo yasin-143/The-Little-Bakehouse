@@ -1,0 +1,35 @@
+runConfig:
+  cpu: 1
+  memoryMiB: 512
+  minInstances: 0
+  maxInstances: 4
+  concurrency: 80
+
+env:
+  - variable: NODE_ENV
+    value: production
+  - variable: ADMIN_EMAILS
+    value: muskan@thelittlebakehouse.in
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: VITE_WHATSAPP_NUMBER
+    value: "919665619972"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: VITE_BUSINESS_PHONE
+    value: "96656 19972"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: VITE_BAKERY_ADDRESS
+    value: "Madhuban Society, Pirangut, Pune, Maharashtra"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: VITE_INSTAGRAM_URL
+    value: "https://instagram.com/thelittlebakehousepune"
+    availability:
+      - BUILD
+      - RUNTIME

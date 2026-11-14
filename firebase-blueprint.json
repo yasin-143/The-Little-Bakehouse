@@ -1,0 +1,384 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "An eggless cake product sold by The Little Bakehouse with weight-based pricing and optional launch discount.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Unique product identifier"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100,
+          "description": "Display name of the cake"
+        },
+        "slug": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120,
+          "pattern": "^[a-z0-9\\-]+$",
+          "description": "URL-friendly cake slug"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 1000,
+          "description": "Artisanal tasting notes and ingredients description"
+        },
+        "category": {
+          "type": "string",
+          "enum": ["Chocolate", "Fruit & Cream", "Signature Crunch", "Specials"],
+          "description": "Menu category"
+        },
+        "price500g": {
+          "type": "number",
+          "description": "Base price in INR for 500g cake"
+        },
+        "price1kg": {
+          "type": "number",
+          "description": "Base price in INR for 1kg cake"
+        },
+        "discountPercent": {
+          "type": "number",
+          "description": "Launch discount percentage (0 to 50)"
+        },
+        "imageUrl": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 1500,
+          "description": "Image path or Firebase Storage URL"
+        },
+        "isAvailable": {
+          "type": "boolean",
+          "description": "Whether the cake is currently available to order"
+        },
+        "isEggless": {
+          "type": "boolean",
+          "description": "Always true for The Little Bakehouse 100% eggless guarantee"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server last update timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "slug",
+        "description",
+        "category",
+        "price500g",
+        "price1kg",
+        "discountPercent",
+        "imageUrl",
+        "isAvailable",
+        "isEggless",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "A customer cake order validated and priced strictly on the server.",
+      "type": "object",
+      "properties": {
+        "orderId": {
+          "type": "string",
+          "minLength": 6,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Human-readable unique order ID (e.g., TLB-20261114-A1B2)"
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Unique client submission token preventing duplicate orders"
+        },
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "Authenticated user UID or guest-server marker"
+        },
+        "customerName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100,
+          "description": "Customer full name"
+        },
+        "phone": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 15,
+          "description": "Customer 10-digit Indian mobile number"
+        },
+        "address": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 400,
+          "description": "Delivery address in Pirangut / Pune or Pickup note"
+        },
+        "deliveryNotes": {
+          "type": "string",
+          "maxLength": 300,
+          "description": "Optional delivery timing or landmark instructions"
+        },
+        "items": {
+          "type": "array",
+          "description": "Bounded list of server-verified ordered cake items"
+        },
+        "complimentaryItem": {
+          "type": "string",
+          "maxLength": 120,
+          "description": "Grand Opening free cupcake note"
+        },
+        "subtotal": {
+          "type": "number",
+          "description": "Server-calculated sum before discounts in INR"
+        },
+        "discountTotal": {
+          "type": "number",
+          "description": "Server-calculated launch discount savings in INR"
+        },
+        "totalAmount": {
+          "type": "number",
+          "description": "Server-calculated final payable amount in INR"
+        },
+        "paymentMethod": {
+          "type": "string",
+          "enum": ["COD", "PICKUP"],
+          "description": "Payment mode"
+        },
+        "paymentStatus": {
+          "type": "string",
+          "enum": ["Pending", "Paid"],
+          "description": "Current payment settlement state"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "Pending",
+            "Confirmed",
+            "Preparing",
+            "Ready",
+            "Out for Delivery",
+            "Delivered",
+            "Cancelled"
+          ],
+          "description": "Order fulfillment status"
+        },
+        "adminNotes": {
+          "type": "string",
+          "maxLength": 400,
+          "description": "Internal kitchen or confirmation notes added by Muskan"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp"
+        }
+      },
+      "required": [
+        "orderId",
+        "idempotencyKey",
+        "userId",
+        "customerName",
+        "phone",
+        "address",
+        "items",
+        "subtotal",
+        "discountTotal",
+        "totalAmount",
+        "paymentMethod",
+        "paymentStatus",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "OrderIdempotency": {
+      "title": "OrderIdempotency",
+      "description": "Locks an idempotency key to a single created orderId to block duplicate submissions.",
+      "type": "object",
+      "properties": {
+        "orderId": {
+          "type": "string",
+          "minLength": 6,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["orderId", "userId", "createdAt"]
+    },
+    "CustomCakeRequest": {
+      "title": "CustomCakeRequest",
+      "description": "A bespoke custom cake enquiry submitted by a customer for Muskan to quote.",
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 6,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "customerName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "phone": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 15
+        },
+        "occasion": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "preferredFlavour": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "weight": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 40
+        },
+        "designDescription": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 1200
+        },
+        "deliveryDate": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 30
+        },
+        "referenceImageUrl": {
+          "type": "string",
+          "maxLength": 1500
+        },
+        "status": {
+          "type": "string",
+          "enum": ["New", "Quoted", "Accepted", "Declined"]
+        },
+        "quotedAmount": {
+          "type": "number"
+        },
+        "adminNotes": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "requestId",
+        "userId",
+        "customerName",
+        "phone",
+        "occasion",
+        "preferredFlavour",
+        "weight",
+        "designDescription",
+        "deliveryDate",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "Authorized bakery administrator record checked by Firestore rules.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 160
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "role": {
+          "type": "string",
+          "enum": ["admin"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "email", "role", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Publicly readable bakery cake catalog; writable strictly by verified admins."
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "Customer cake orders with PII isolation; readable only by owner or admins, updatable only by admins."
+    },
+    "/orderIdempotency/{keyId}": {
+      "schema": { "$ref": "#/entities/OrderIdempotency" },
+      "description": "Deduplication tokens preventing duplicate checkout submissions."
+    },
+    "/customCakeRequests/{requestId}": {
+      "schema": { "$ref": "#/entities/CustomCakeRequest" },
+      "description": "Custom cake inquiries and admin quotations."
+    },
+    "/admins/{adminId}": {
+      "schema": { "$ref": "#/entities/AdminUser" },
+      "description": "Authorized admin role registry; customers cannot self-register."
+    }
+  }
+}
