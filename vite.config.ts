@@ -5,6 +5,7 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
+    base: '/The-Little-Bakehouse/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
